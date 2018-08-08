@@ -78,8 +78,8 @@ def get_events(escrow_pubkey=None, limit=100):
     with SQL_CONNECTION() as sql:
         sql.execute("SELECT * FROM events LIMIT %s", (limit,))
         events = [{
-                key.decode('utf8') if isinstance(key, bytes) else key: val for key, val in event.items()}
-                    for event in sql.fetchall()]
+            key.decode('utf8') if isinstance(key, bytes) else key: val for key, val in event.items()}
+                  for event in sql.fetchall()]
         return {
             'packages_events': [event for event in events if event['escrow_pubkey'] is not None],
             'user_events': [event for event in events if event['escrow_pubkey'] is None]}
