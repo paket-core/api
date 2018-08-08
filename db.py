@@ -61,18 +61,28 @@ def add_event(escrow_pubkey, user_pubkey, event_type, location):
         """, (escrow_pubkey, user_pubkey, event_type, location))
 
 
-def get_events(escrow_pubkey):
+def get_events(escrow_pubkey=None, limit=100):
     """Get all package events."""
+    if escrow_pubkey:
+        with SQL_CONNECTION() as sql:
+            sql.execute("""
+                SELECT timestamp, user_pubkey, event_type, location FROM events
+                WHERE escrow_pubkey = %s
+                ORDER BY timestamp ASC""", (escrow_pubkey,))
+            # Fix for mysql-connector bug which makes sql.fetchall() return some
+            # keys as (unjsonable) bytes.
+            return [{
+                key.decode('utf8') if isinstance(key, bytes) else key: val for key, val in event.items()}
+                    for event in sql.fetchall()]
+
     with SQL_CONNECTION() as sql:
-        sql.execute("""
-            SELECT timestamp, user_pubkey, event_type, location FROM events
-            WHERE escrow_pubkey = %s
-            ORDER BY timestamp ASC""", (escrow_pubkey,))
-        # Fix for mysql-connector bug which makes sql.fetchall() return some
-        # keys as (unjsonable) bytes.
-        return [{
-            key.decode('utf8') if isinstance(key, bytes) else key: val for key, val in event.items()}
-                for event in sql.fetchall()]
+        sql.execute("SELECT * FROM events LIMIT %s", (limit,))
+        events = [{
+                key.decode('utf8') if isinstance(key, bytes) else key: val for key, val in event.items()}
+                    for event in sql.fetchall()]
+        return {
+            'packages_events': [event for event in events if event['escrow_pubkey'] is not None],
+            'user_events': [event for event in events if event['escrow_pubkey'] is None]}
 
 
 def enrich_package(package, user_role=None, user_pubkey=None):
