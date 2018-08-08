@@ -44,7 +44,7 @@ def init_db():
         sql.execute('''
             CREATE TABLE events(
                 timestamp TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-                escrow_pubkey VARCHAR(56),
+                escrow_pubkey VARCHAR(56) NULL,
                 user_pubkey VARCHAR(56),
                 event_type VARCHAR(20),
                 location VARCHAR(24),
