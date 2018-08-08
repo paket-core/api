@@ -62,7 +62,7 @@ def add_event(escrow_pubkey, user_pubkey, event_type, location):
 
 
 def get_events(escrow_pubkey=None, limit=100):
-    """Get all package events."""
+    """Get a list of events."""
     if escrow_pubkey:
         with SQL_CONNECTION() as sql:
             sql.execute("""
