@@ -271,7 +271,7 @@ def packages_handler():
     return {'status': 200, 'packages': db.get_packages()}
 
 
-@BLUEPRINT.route("/v{}/debug/events".format(VERSION), methods=['POST'])
+@BLUEPRINT.route("/v{}/events".format(VERSION), methods=['POST'])
 @flasgger.swag_from(swagger_specs.EVENTS)
 @webserver.validation.call
 def events_handler():
