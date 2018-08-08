@@ -444,6 +444,18 @@ CHANGED_LOCATION = {
     }
 }
 
+EVENTS = {
+    'tags': ['packages'],
+    'parameters': [
+        {
+            'name': 'limit', 'description': 'limit of queried events',
+            'in': 'formData', 'required': False, 'type': 'integer'}
+    ],
+    'responses': {
+        '200': {'description': 'a list of events'}
+    }
+}
+
 FUND_FROM_ISSUER = {
     'tags': ['debug'],
     'parameters': [
@@ -494,13 +506,6 @@ PACKAGES = {
     'tags': ['debug'],
     'responses': {
         '200': {'description': 'a list of packages'}
-    }
-}
-
-EVENTS = {
-    'tags': ['debug'],
-    'responses': {
-        '200': {'description': 'a list of events'}
     }
 }
 
