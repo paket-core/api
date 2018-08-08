@@ -27,11 +27,12 @@ def init_db():
     EVENTS.clear()
 
 
-def add_event(escrow_pubkey, user_pubkey, event_type, location):
+def add_event(user_pubkey, event_type, location, escrow_pubkey=None):
     """Add a package event."""
     EVENTS.append({
-        'escrow_pubkey': escrow_pubkey, 'user_pubkey': user_pubkey,
-        'event_type': event_type, 'location': location, 'timestamp': time.time()})
+        'timestamp': time.time(), 'user_pubkey': user_pubkey,
+        'event_type': event_type, 'location': location,
+        'escrow_pubkey': escrow_pubkey})
 
 
 def get_events(escrow_pubkey):
@@ -51,7 +52,7 @@ def create_package(
         'set_options_transaction': set_options_transaction, 'refund_transaction': refund_transaction,
         'merge_transaction': merge_transaction, 'payment_transaction': payment_transaction
     })
-    add_event(escrow_pubkey, launcher_pubkey, 'launched', location)
+    add_event(launcher_pubkey, 'launched', location, escrow_pubkey)
     return db.enrich_package(get_package(escrow_pubkey))
 
 

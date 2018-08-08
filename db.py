@@ -44,21 +44,21 @@ def init_db():
         sql.execute('''
             CREATE TABLE events(
                 timestamp TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+                user_pubkey VARCHAR(56) NOT NULL,
+                event_type VARCHAR(20) NOT NULL,
+                location VARCHAR(24) NULL,
                 escrow_pubkey VARCHAR(56) NULL,
-                user_pubkey VARCHAR(56),
-                event_type VARCHAR(20),
-                location VARCHAR(24),
                 FOREIGN KEY(escrow_pubkey) REFERENCES packages(escrow_pubkey))''')
         LOGGER.debug('events table created')
 
 
-def add_event(escrow_pubkey, user_pubkey, event_type, location):
+def add_event(user_pubkey, event_type, location, escrow_pubkey):
     """Add a package event."""
     with SQL_CONNECTION() as sql:
         sql.execute("""
-            INSERT INTO events (escrow_pubkey, user_pubkey, event_type, location)
+            INSERT INTO events (user_pubkey, event_type, location, escrow_pubkey)
             VALUES (%s, %s, %s, %s)
-        """, (escrow_pubkey, user_pubkey, event_type, location))
+        """, (user_pubkey, event_type, location, escrow_pubkey))
 
 
 def get_events(escrow_pubkey):
@@ -75,10 +75,11 @@ def get_events(escrow_pubkey):
                 for event in sql.fetchall()]
 
 
-def enrich_package(package, user_role=None, user_pubkey=None):
+def enrich_package(package, testnet=False, user_role=None, user_pubkey=None):
     """Add some periferal data to the package object."""
-    package['blockchain_url'] = "https://testnet.stellarchain.io/address/{}".format(package['escrow_pubkey'])
-    package['paket_url'] = "https://paket.global/paket/{}".format(package['escrow_pubkey'])
+    package['blockchain_url'] = "https://stellar.expert/explorer/{}/account/{}".format(
+        'testnet' if testnet else 'public', package['escrow_pubkey'])
+    package['paket_url'] = "https://paket.global/escrow/{}".format(package['escrow_pubkey'])
     package['events'] = get_events(package['escrow_pubkey'])
     if package['events']:
         package['launch_date'] = package['events'][0]['timestamp']
@@ -118,7 +119,7 @@ def create_package(
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (
                 escrow_pubkey, launcher_pubkey, recipient_pubkey, deadline, payment, collateral,
                 set_options_transaction, refund_transaction, merge_transaction, payment_transaction))
-    add_event(escrow_pubkey, launcher_pubkey, 'launched', location)
+    add_event(launcher_pubkey, 'launched', location, escrow_pubkey)
     return enrich_package(get_package(escrow_pubkey))
 
 

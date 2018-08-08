@@ -15,7 +15,7 @@ APP = webserver.setup(routes.BLUEPRINT)
 APP.testing = True
 
 # pylint: disable=invalid-name
-routes.db = tests.db_mockup
+#routes.db = tests.db_mockup
 # pylint: enable=invalid-name
 
 
@@ -30,10 +30,6 @@ class ApiBaseTest(unittest.TestCase):
         self.funded_account = paket_stellar.get_keypair(seed=self.funded_seed)
         self.funded_pubkey = self.funded_account.address().decode()
         LOGGER.info('init done')
-
-    def setUp(self):
-        """Setting up the test fixture before exercising it."""
-        routes.db.init_db()
 
     @staticmethod
     def sign_transaction(transaction, seed):
@@ -290,12 +286,14 @@ class MyPackagesTest(ApiBaseTest):
 
     def test_my_packages(self):
         """Test getting user packages."""
+        util.logger.setup()
         account = self.create_and_setup_new_account()
         LOGGER.info('getting packages for new user: %s', account[0])
         packages = self.call(
             path='my_packages', expected_code=200,
             fail_message='does not get ok status code on valid request', seed=account[1],
             user_pubkey=account[0])['packages']
+        LOGGER.info(111111111111111111111111)
         self.assertTrue(len(packages) == 0)
 
         payment, collateral = 50000000, 100000000

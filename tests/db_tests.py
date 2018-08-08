@@ -156,7 +156,7 @@ class GetPackagesTest(DbBaseTest):
         db.create_package(
             third_package_members['escrow'][0], third_package_members['launcher'][0],
             third_package_members['recipient'][0], 50000000, 100000000, time.time(), None, None, None, None)
-        db.add_event(third_package_members['escrow'][0], user[0], 'couriered', None)
+        db.add_event(user[0], 'couriered', 'test', third_package_members['escrow'][0])
 
         packages = db.get_packages(user[0])
         self.assertEqual(len(packages), 3, "3 packages expected, {} got instead".format(len(packages)))
@@ -191,7 +191,7 @@ class AddEventTest(DbBaseTest):
         db.create_package(
             package_members['escrow'][0], package_members['launcher'][0], package_members['recipient'][0],
             50000000, 100000000, time.time(), None, None, None, None)
-        db.add_event(package_members['escrow'][0], package_members['courier'][0], 'couriered', None)
+        db.add_event(package_members['courier'][0], 'couriered', 'test', package_members['escrow'][0])
         events = db.get_events(package_members['escrow'][0])
         self.assertEqual(len(events), 2, "2 events expected, but {} got instead".format(len(events)))
         couriered_event = next((event for event in events if event['event_type'] == 'couriered'), None)
@@ -216,7 +216,7 @@ class GetEventsTest(DbBaseTest):
             new_package_members['escrow'][0], new_package_members['launcher'][0], new_package_members['recipient'][0],
             50000000, 100000000, time.time(), None, None, None, None)
         for user in new_package_members:
-            db.add_event(new_package_members['escrow'][0], user[0], 'new event', None)
+            db.add_event(user[0], 'new event', 'test', new_package_members['escrow'][0])
         events = db.get_events(package_members['escrow'][0])
         self.assertEqual(len(events), 1, "expected 1 event for package: '{}', but '{}' got instead".format(
             package_members['escrow'][0], len(events)))
@@ -238,7 +238,7 @@ class GetEventsTest(DbBaseTest):
 
         for index, members in enumerate(packages_members):
             for _ in range(index):
-                db.add_event(members['escrow'][0], members['courier'][0], 'couriered', None)
+                db.add_event(members['courier'][0], 'couriered', 'test', members['escrow'][0])
         for index, members in enumerate(packages_members):
             events = db.get_events(members['escrow'][0])
             self.assertEqual(len(events), index+1, "{} event expected for escrow: {}, but {} got instead".format(

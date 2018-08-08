@@ -160,7 +160,7 @@ def accept_package_handler(user_pubkey, escrow_pubkey, location=None):
     """
     package = db.get_package(escrow_pubkey)
     event_type = 'received' if package['recipient_pubkey'] == user_pubkey else 'couriered'
-    db.add_event(escrow_pubkey, user_pubkey, event_type, location)
+    db.add_event(user_pubkey, event_type, location, escrow_pubkey)
     return {'status': 200}
 
 
@@ -194,20 +194,18 @@ def package_handler(escrow_pubkey):
 
 @BLUEPRINT.route("/v{}/add_event".format(VERSION), methods=['POST'])
 @flasgger.swag_from(swagger_specs.ADD_EVENT)
-@webserver.validation.call(['escrow_pubkey', 'event_type', 'location'], require_auth=True)
-def add_event_handler(user_pubkey, escrow_pubkey, event_type, location):
+@webserver.validation.call(['event_type', 'location'], require_auth=True)
+def add_event_handler(user_pubkey, event_type, location, escrow_pubkey=None):
     """
-    (Deprecated)
-    Add new event for package.
+    Add new event.
     ---
     :param user_pubkey:
-    :param escrow_pubkey:
     :param event_type:
     :param location:
+    :param escrow_pubkey:
     :return:
     """
-    LOGGER.warning("/v%s/add_event is deprecated and will be removed in future", VERSION)
-    db.add_event(escrow_pubkey, user_pubkey, event_type, location)
+    db.add_event(user_pubkey, event_type, location, escrow_pubkey)
     return {'status': 200}
 
 
@@ -223,7 +221,7 @@ def changed_location_handler(user_pubkey, escrow_pubkey, location):
     :param location:
     :return:
     """
-    db.add_event(escrow_pubkey, user_pubkey, 'changed location', location)
+    db.add_event(user_pubkey, 'changed location', location, escrow_pubkey)
     return {'status': 200}
 
 
