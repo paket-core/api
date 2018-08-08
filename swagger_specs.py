@@ -497,6 +497,13 @@ PACKAGES = {
     }
 }
 
+EVENTS = {
+    'tags': ['debug'],
+    'responses': {
+        '200': {'description': 'a list of events'}
+    }
+}
+
 LOG = {
     'tags': [
         'debug'
