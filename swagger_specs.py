@@ -45,13 +45,13 @@ Our calls are split into the following security levels:
  - Anonymous functions: require no authentication.
  - Authenticated functions: require asymmetric key authentication. Not tested
    in debug mode.
-    - The 'Pubkey' header will contain the user's pubkey.
-    - The 'Fingerprint' header is constructed from the comma separated
+    - The **'Pubkey'** header will contain the user's public key.
+    - The **'Fingerprint'** header is constructed from the comma separated
       concatenation of the called URI, all the arguments (as key=value), and an
       ever increasing nonce (recommended to use Unix time in milliseconds).
-    - The 'Signature' header will contain the signature of the key specified in
-      the 'Pubkey' header on the fingerprint specified in the 'Fingerprint'
-      header, encoded to Base64 ASCII.
+    - The **'Signature'** header will contain a Base64 ASCII encoded signature
+      on the specified 'Fingerprint', produced by the private key corresponding
+      to the specified 'pubkey'.
 
 Walkthrough
 ===========
@@ -65,35 +65,35 @@ launcher account, a courier account, and a recipient account.
 - To create an account you need a Stellar compatible ed25519 keypair with a
   matching funded Stellar account. While on testnet, the Stellar account
   creator is your friend: https://www.stellar.org/laboratory/#account-creator
-- Once your account is created, check it by calling /bul_account - you should
+- Once your account is created, check it by calling `/bul_account` - you should
   get a 409 error saying that the account does not trust BULs.
 - To change this and extend trust in BULs, from each account you should call
-  /prepare_trust, sign the returned XDR with the matching private key, and
-  submit it to /submit_transaction.
-- Check your account by calling /bul_account again - you should now get a BUL
+  `/prepare_trust`, sign the returned XDR with the matching private key, and
+  submit it to `/submit_transaction`.
+- Check your account by calling `/bul_account` again - you should now get a BUL
   balance of 0.
 - Transfer some BULs into each of the accounts. In debug mode, you can call
-  /fund_from_issuer.
-- Check your account by calling /bul_account again - make sure your BUL balance
+  `/fund_from_issuer`.
+- Check your account by calling `/bul_account` again - make sure your BUL balance
   reflects the amount of BULs you transfered.
 
 ### Launch a Package
 
 - As the launcher, create the escrow account. Unlike the accounts in the setup
   section, this account will receive its minimal funding in XLM from the
-  launcher, and it will be the launhcer's responsability to merge this account
+  launcher, and it will be the launhcer's responsibility to merge this account
   back to reclaim any leftover XLMs.
     - Generate a keypair.
-    - As the launcher, call /prepare_account with the new pubkey given
+    - As the launcher, call `/prepare_account` with the new pubkey given
       as argument, sign the returned transaction (with the launcher private
-      key), and submit it to /submit_transaction.
-    - Optionally, check the new account by calling /bul_account - you should
+      key), and submit it to `/submit_transaction`.
+    - Optionally, check the new account by calling `/bul_account` - you should
       get a 409 error saying that the account does not trust BULs.
-    - As the new escrow account, call /prepare_trust, sign the returned
+    - As the new escrow account, call `/prepare_trust`, sign the returned
       transaction (with the escrow private key), and submit it to
-      /submit_transaction.
-    - Optionally, call /bul_account and verify your BUL balance is now 0.
-- As the escrow account, call /prepare_escrow. Make sure that the payment is
+      `/submit_transaction`.
+    - Optionally, call `/bul_account` and verify your BUL balance is now 0.
+- As the escrow account, call `/prepare_escrow`. Make sure that the payment is
   not larger than the launcher's BUL balance, and that the collateral is not
   larger than the courier's. The call will return four unsigned transactions:
     - set_options_transaction: changes the signers and weights, thus
@@ -113,45 +113,45 @@ launcher account, a courier account, and a recipient account.
       has been submitted and the refund_transaction has not.
     - merge_transaction: closes the escrow account and sends any remaining XLM
       balance to the launcher. If the escrow account still trusts any other
-      token it will fail and invalidate itself. It requires no signatures, but
+      token, the transaction will fail and invalidate itself. It requires no signatures, but
       can only be submitted after either the payment or the collateral
       transaction.
 - As the escrow account, sign and submit the set_options_transaction.
-- Call /bul_account on the escrow account and verify that the signers are
+- Call `/bul_account` on the escrow account and verify that the signers are
 properly set.
-- Make note of the BUL balances of the launcher by calling /bul_account.
+- Make note of the BUL balances of the launcher by calling `/bul_account`.
 - Transfer the payment from the launcher to the escrow by calling
-/prepare_send_buls, signing the transaction, and submitting it to
-/submit_transaction from your launcher account.
-- Make note of the BUL balances of the launcher by calling /bul_account. It
+`/prepare_send_buls`, signing the transaction, and submitting it to
+`/submit_transaction` from your launcher account.
+- Make note of the BUL balances of the launcher by calling `/bul_account`. It
   should be the same as before minus the payment.
 
 ### Accept the Package by Courier
 
-- Make note of the BUL balances of the courier by calling /bul_account.
+- Make note of the BUL balances of the courier by calling `/bul_account`.
 - Transfer the collateral from the courier to the escrow by calling
-/prepare_send_buls, signing the transaction, and submitting it to
-/submit_transaction from the courier account.
-- Make note of the BUL balances of the courier by calling /bul_account. It
+`/prepare_send_buls`, signing the transaction, and submitting it to
+`/submit_transaction` from the courier account.
+- Make note of the BUL balances of the courier by calling `/bul_account`. It
   should be the same as before minus the collateral.
-- As the courier, call /accept_package with the escrow_pubkey as argument.
+- As the courier, call `/accept_package` with the escrow_pubkey as argument.
 
 ### Settle the Delivery
 
 - Either approve the delivery:
     - As the recipient, sign and submit the payment transaction.
-    - Make note of the BUL balances of the courier by calling /bul_account. It
+    - Make note of the BUL balances of the courier by calling `/bul_account`. It
     should be the same as before, plus both payment and collateral.
 - Or wait for deadline to pass and ask for a refund + insurance.
     - Submit the payment transaction.
-    - Make note of the BUL balances of the launcher by calling /bul_account. It
+    - Make note of the BUL balances of the launcher by calling `/bul_account`. It
     should be the same as before, plus both payment and collateral.
 
 ### Merge the Escrow Account
 
 - Make note of the XLM balances of the launcher and the escrow by calling
-/bul_account on both.
-- Submit the merge account transaction to /submit_transaction for the launcher
+`/bul_account` on both.
+- Submit the merge account transaction to `/submit_transaction` for the launcher
   to reclaim any unspent XLM that were spent creating the escrow account.
 - Make note of the XLM balances of the launcher. It should be the same as
   before plus the escrow's XLM balance.
