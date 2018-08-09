@@ -44,7 +44,7 @@ def init_db():
         sql.execute('''
             CREATE TABLE events(
                 timestamp TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-                escrow_pubkey VARCHAR(56),
+                escrow_pubkey VARCHAR(56) NULL,
                 user_pubkey VARCHAR(56),
                 event_type VARCHAR(20),
                 location VARCHAR(24),
@@ -80,8 +80,9 @@ def enrich_package(package, user_role=None, user_pubkey=None):
     package['blockchain_url'] = "https://testnet.stellarchain.io/address/{}".format(package['escrow_pubkey'])
     package['paket_url'] = "https://paket.global/paket/{}".format(package['escrow_pubkey'])
     package['events'] = get_events(package['escrow_pubkey'])
+    if package['events']:
+        package['launch_date'] = package['events'][0]['timestamp']
     event_types = set([event['event_type'] for event in package['events']])
-    package['launch_date'] = package['events'][0]['timestamp']
 
     if 'received' in event_types:
         package['status'] = 'delivered'
