@@ -449,11 +449,11 @@ EVENTS = {
     'tags': ['packages'],
     'parameters': [
         {
-            'name': 'limit', 'description': 'limit of queried events',
+            'name': 'max_events_num', 'description': 'limit of queried events',
             'in': 'formData', 'required': False, 'type': 'integer'},
         {
             'name': 'mock', 'description': 'allow mock data in case of empty db',
-            'in': 'formData', 'required': False, 'type': 'boolean'}
+            'in': 'formData', 'required': False, 'type': 'integer'}
     ],
     'responses': {
         '200': {'description': 'a list of events'}

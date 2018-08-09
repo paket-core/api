@@ -272,16 +272,16 @@ def packages_handler():
 @BLUEPRINT.route("/v{}/events".format(VERSION), methods=['POST'])
 @flasgger.swag_from(swagger_specs.EVENTS)
 @webserver.validation.call
-def events_handler(limit=100, mock=False):
+def events_handler(max_events_num=100, mock=None):
     """
     Get all events.
     ---
-    :param limit:
+    :param max_events_num:
     :param mock:
     :return:
     """
-    if not mock:
-        events = db.get_events(limit)
+    if not bool(mock):
+        events = db.get_events(max_events_num)
     # Mock data. Temporary.
     else:
         events = {
