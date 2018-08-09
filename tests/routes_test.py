@@ -248,7 +248,7 @@ class PrepareEscrowTest(ApiBaseTest):
         location = '-37.4244753,-12.4845718'
         LOGGER.info("preparing new escrow at location: %s", location)
         escrow_pubkey = self.prepare_escrow(payment, collateral, deadline, location)['escrow']
-        events = routes.db.get_events(escrow_pubkey[0])
+        events = routes.db.get_package_events(escrow_pubkey[0])
         self.assertEqual(
             len(events), 1,
             "expected 1 event for escrow: {}, {} got instead".format(escrow_pubkey, len(events)))
@@ -276,7 +276,7 @@ class AcceptPackageTest(ApiBaseTest):
             self.call(
                 'accept_package', 200, 'member could not accept package',
                 member[1], escrow_pubkey=escrow_stuff['escrow'][0])
-            events = routes.db.get_events(escrow_stuff['escrow'][0])
+            events = routes.db.get_package_events(escrow_stuff['escrow'][0])
             expected_event_type = 'couriered' if member == escrow_stuff['courier'] else 'received'
             self.assertEqual(
                 events[-1]['event_type'], expected_event_type,
