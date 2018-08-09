@@ -445,6 +445,21 @@ CHANGED_LOCATION = {
     }
 }
 
+EVENTS = {
+    'tags': ['packages'],
+    'parameters': [
+        {
+            'name': 'limit', 'description': 'limit of queried events',
+            'in': 'formData', 'required': False, 'type': 'integer'},
+        {
+            'name': 'allow_mock', 'description': 'allow mock data in case of empty db',
+            'in': 'formData', 'required': False, 'type': 'boolean'}
+    ],
+    'responses': {
+        '200': {'description': 'a list of events'}
+    }
+}
+
 FUND_FROM_ISSUER = {
     'tags': ['debug'],
     'parameters': [
