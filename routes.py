@@ -32,8 +32,9 @@ webserver.validation.KWARGS_CHECKERS_AND_FIXERS['_num'] = webserver.validation.c
 @webserver.validation.call(['transaction'])
 def submit_transaction_handler(transaction):
     """
-    Submit a signed transaction. This call is used to submit signed
-    transactions. Signed transactions can be obtained by signing unsigned
+    Submit a signed transaction.
+    This call is used to submit signed transactions.
+    Signed transactions can be obtained by signing unsigned
     transactions returned by other calls. You can use the
     [laboratory](https://www.stellar.org/laboratory/#txsigner?network=test) to
     sign the transaction with your private key.
@@ -197,8 +198,7 @@ def package_handler(escrow_pubkey):
 @webserver.validation.call(['escrow_pubkey', 'event_type', 'location'], require_auth=True)
 def add_event_handler(user_pubkey, escrow_pubkey, event_type, location):
     """
-    (Deprecated)
-    Add new event for package.
+    (Deprecated) Add new event for package.
     ---
     :param user_pubkey:
     :param escrow_pubkey:
@@ -235,7 +235,7 @@ def changed_location_handler(user_pubkey, escrow_pubkey, location):
 @webserver.validation.call(['funded_pubkey'])
 def fund_handler(funded_pubkey, funded_buls=1000000000):
     """
-    Give an account BULs - for debug only.
+    Give BULs to an account - for debug only.
     ---
     :return:
     """
@@ -290,6 +290,9 @@ def view_log_handler(lines_num=10):
     """
     Get last lines of log - for debug only.
     Specify lines_num to get the x last lines.
+    ---
+    :param lines_num:
+    :return:
     """
     with open(os.path.join(util.logger.LOG_DIR_NAME, util.logger.LOG_FILE_NAME)) as logfile:
         return {'status': 200, 'log': logfile.readlines()[:-1 - lines_num:-1]}
