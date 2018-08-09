@@ -274,14 +274,14 @@ def packages_handler():
 @BLUEPRINT.route("/v{}/events".format(VERSION), methods=['POST'])
 @flasgger.swag_from(swagger_specs.EVENTS)
 @webserver.validation.call
-def events_handler(allow_mock=False):
+def events_handler(limit=100, allow_mock=False):
     """
     Get all events.
     ---
     :return:
     """
-    events = db.get_events()
-    if not events and allow_mock:
+    events = db.get_events(limit=limit)
+    if (not events['packages_events'] and not events['user_events']) and allow_mock:
         events = {
             'packages_events': [
                 {'timestamp': '2018-08-03 14:29:18.116482',
