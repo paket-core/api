@@ -8,15 +8,10 @@ import util.logger
 import webserver.validation
 
 import routes
-import tests.db_mockup
 
 LOGGER = util.logger.logging.getLogger('pkt.api.test')
 APP = webserver.setup(routes.BLUEPRINT)
 APP.testing = True
-
-# pylint: disable=invalid-name
-routes.db = tests.db_mockup
-# pylint: enable=invalid-name
 
 
 class ApiBaseTest(unittest.TestCase):
@@ -33,7 +28,10 @@ class ApiBaseTest(unittest.TestCase):
 
     def setUp(self):
         """Setting up the test fixture before exercising it."""
-        routes.db.init_db()
+        try:
+            routes.db.init_db()
+        except util.db.mysql.connector.ProgrammingError:
+            LOGGER.info('tables already exists')
 
     @staticmethod
     def sign_transaction(transaction, seed):
