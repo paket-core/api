@@ -25,7 +25,7 @@ Web API Server for The PaKeT Project
 
 What is this?
 =============
-This page is used as both, documentation of our server API and as a sandbox to
+This page is used as both documentation of our server API and as a sandbox to
 test interaction with it. You can use this page to call the RESTful API while
 specifying any required or optional parameter. The page also presents curl
 commands that can be used to call the server.
@@ -45,13 +45,13 @@ Our calls are split into the following security levels:
  - Anonymous functions: require no authentication.
  - Authenticated functions: require asymmetric key authentication. Not tested
    in debug mode.
-    - The **'Pubkey'** header will contain the user's pubkey.
+    - The **'Pubkey'** header will contain the user's public key.
     - The **'Fingerprint'** header is constructed from the comma separated
       concatenation of the called URI, all the arguments (as key=value), and an
       ever increasing nonce (recommended to use Unix time in milliseconds).
-    - The **'Signature'** header will contain the signature of the key, specified in
-      the 'Pubkey' header, on the fingerprint, that specified in the 'Fingerprint'
-      header. Encoded to Base64 ASCII.
+    - The **'Signature'** header will contain a Base64 ASCII encoded signature
+      on the specified 'Fingerprint', produced by the private key corresponding
+      to the specified 'pubkey'.
 
 Walkthrough
 ===========
@@ -93,7 +93,7 @@ launcher account, a courier account, and a recipient account.
       transaction (with the escrow private key), and submit it to
       `/submit_transaction`.
     - Optionally, call `/bul_account` and verify your BUL balance is now 0.
-- As the escrow account, call `/prepare_escrow`. Make sure, that the payment is
+- As the escrow account, call `/prepare_escrow`. Make sure that the payment is
   not larger than the launcher's BUL balance, and that the collateral is not
   larger than the courier's. The call will return four unsigned transactions:
     - set_options_transaction: changes the signers and weights, thus
@@ -113,7 +113,7 @@ launcher account, a courier account, and a recipient account.
       has been submitted and the refund_transaction has not.
     - merge_transaction: closes the escrow account and sends any remaining XLM
       balance to the launcher. If the escrow account still trusts any other
-      token, it will fail and invalidate itself. It requires no signatures, but
+      token, the transaction will fail and invalidate itself. It requires no signatures, but
       can only be submitted after either the payment or the collateral
       transaction.
 - As the escrow account, sign and submit the set_options_transaction.
