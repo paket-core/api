@@ -42,16 +42,17 @@ Security
 ========
 Our calls are split into the following security levels:
  - Debug functions: require no authentication, available only in debug mode.
- - Anonymous functions: require no authentication.
- - Authenticated functions: require asymmetric key authentication. Not tested
-   in debug mode.
-    - The **'Pubkey'** header will contain the user's public key.
+ - Anonymous functions: require no authentication, used to retrieve public data.
+ - Authenticated functions: require asymmetric key authentication:
+    - The **'Pubkey'** header will contain the user's pubkey.
     - The **'Fingerprint'** header is constructed from the comma separated
       concatenation of the called URI, all the arguments (as key=value), and an
       ever increasing nonce (recommended to use Unix time in milliseconds).
     - The **'Signature'** header will contain a Base64 ASCII encoded signature
       on the specified 'Fingerprint', produced by the private key corresponding
       to the specified 'pubkey'.
+
+Note, that the security headers are not validated when in debug mode, but the
 
 Walkthrough
 ===========
