@@ -276,6 +276,8 @@ def events_handler(limit=100, allow_mock=False):
     """
     Get all events.
     ---
+    :param limit:
+    :param allow_mock:
     :return:
     """
     events = db.get_events(limit=limit)
